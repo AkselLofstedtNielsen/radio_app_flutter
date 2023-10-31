@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class TableuWidget extends StatelessWidget {
+  //isak e king på git king
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Map<String, dynamic>?>?>(
