@@ -50,7 +50,12 @@ class Home extends StatelessWidget {
                     );
                   },
                   child: ListTile(
-                    leading: Image.network(item['image']),
+                    leading: Image.network(
+                      item['image'],
+                      errorBuilder: (context, error, stackTrace) {
+                        return Text('Image load failed');
+                      },
+                    ),
                     title: Text(item['name']),
                     subtitle: Text(item['tagline']),
                   ),

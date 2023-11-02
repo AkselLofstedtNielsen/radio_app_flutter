@@ -30,7 +30,11 @@ class TableuWidget extends StatelessWidget {
                 final item = tableu[index]!;
                 return ListTile(
                   leading: Image.network(
-                      item['imageurl']), // Check the field name from your API
+                    item['imageurl'],
+                    errorBuilder: (context, error, stackTrace) {
+                      return Text('Image load failed');
+                    },
+                  ),
                   title: Text(item['title']),
                   subtitle: Text(item['description']),
                 );
