@@ -28,15 +28,25 @@ class TableuWidget extends StatelessWidget {
               itemCount: tableu.length,
               itemBuilder: (context, index) {
                 final item = tableu[index]!;
-                return ListTile(
-                  leading: Image.network(
-                    item['imageurl'],
-                    errorBuilder: (context, error, stackTrace) {
-                      return Text('Image load failed');
-                    },
+                return Card(
+                  margin: EdgeInsets.all(8.0), // Add margin around the cards
+                  elevation: 5, // Add a shadow effect
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Apply rounded corners
+                    side: BorderSide(
+                        color: Colors.grey, width: 1.0), // Add a silver outline
                   ),
-                  title: Text(item['title']),
-                  subtitle: Text(item['description']),
+                  child: ListTile(
+                    leading: Image.network(
+                      item['imageurl'], // Make sure the field name is correct
+                      errorBuilder: (context, error, stackTrace) {
+                        return Text('Image load failed');
+                      },
+                    ),
+                    title: Text(item['title']),
+                    subtitle: Text(item['description']),
+                  ),
                 );
               },
             );

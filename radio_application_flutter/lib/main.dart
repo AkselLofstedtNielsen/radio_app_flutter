@@ -34,33 +34,57 @@ class Home extends StatelessWidget {
           } else {
             List<Map<String, dynamic>?> channels = snapshot.data ?? [];
 
-            return ListView.builder(
-              itemCount: channels.length,
-              itemBuilder: (context, index) {
-                final item = channels[index]!;
-                int channelId = item['id'];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            TableuWidget(channelId: channelId),
+            return Container(
+              color: Colors.grey, // Set the background color of the screen
+              child: ListView.builder(
+                itemCount: channels.length,
+                itemBuilder: (context, index) {
+                  final item = channels[index]!;
+                  int channelId = item['id'];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              TableuWidget(channelId: channelId),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      margin:
+                          EdgeInsets.all(8.0), // Add margin around the cards
+                      elevation: 5, // Add a shadow effect
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            12.0), // Apply rounded corners
+                        side: BorderSide(
+                            color: Colors.grey,
+                            width: 1.0), // Add a silver outline
                       ),
-                    );
-                  },
-                  child: ListTile(
-                    leading: Image.network(
-                      item['image'],
-                      errorBuilder: (context, error, stackTrace) {
-                        return Text('Image load failed');
-                      },
+                      child: ListTile(
+                        leading: Container(
+                          width:
+                              60, // Set the width of the circular image container
+                          height:
+                              60, // Set the height of the circular image container
+
+                          child: Center(
+                            child: Image.network(
+                              item['image'],
+                              errorBuilder: (context, error, stackTrace) {
+                                return Text('Image load failed');
+                              },
+                            ),
+                          ),
+                        ),
+                        title: Text(item['name']),
+                        subtitle: Text(item['tagline']),
+                      ),
                     ),
-                    title: Text(item['name']),
-                    subtitle: Text(item['tagline']),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           }
         },
