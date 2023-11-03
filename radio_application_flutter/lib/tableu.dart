@@ -10,13 +10,13 @@ class TableuWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tableu Widget'),
+        title: const Text('Tableu Widget'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>?>?>(
         future: fetchTableuApi(channelId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
@@ -24,32 +24,39 @@ class TableuWidget extends StatelessWidget {
           } else {
             List<Map<String, dynamic>?> tableu = snapshot.data ?? [];
 
-            return ListView.builder(
-              itemCount: tableu.length,
-              itemBuilder: (context, index) {
-                final item = tableu[index]!;
-                return Card(
-                  margin: EdgeInsets.all(8.0), // Add margin around the cards
-                  elevation: 5, // Add a shadow effect
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(12.0), // Apply rounded corners
-                    side: BorderSide(
-                        color: Colors.grey, width: 1.0), // Add a silver outline
-                  ),
-                  child: ListTile(
-                    leading: Image.network(
-                      item['imageurl'], // Make sure the field name is correct
-                      errorBuilder: (context, error, stackTrace) {
-                        return Text('Image load failed');
-                      },
-                    ),
-                    title: Text(item['title']),
-                    subtitle: Text(item['description']),
-                  ),
-                );
-              },
-            );
+            return Container(
+                color: const Color.fromARGB(255, 30, 30, 30),
+                child: ListView.builder(
+                  itemCount: tableu.length,
+                  itemBuilder: (context, index) {
+                    final item = tableu[index]!;
+                    return Card(
+                      color: const Color.fromARGB(255, 30, 30, 30),
+                      margin:
+                          const EdgeInsets.all(8.0), // Margin around the cards
+                      elevation: 5, // Shadow effect
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(12.0), // Rounded corners
+                        side: const BorderSide(
+                            color: Colors.grey, width: 1.0), // Silver outline
+                      ),
+                      child: ListTile(
+                        leading: Image.network(
+                          item['imageurl'],
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Text('Image load failed',
+                                style: TextStyle(color: Colors.white));
+                          },
+                        ),
+                        title: Text(item['title'],
+                            style: const TextStyle(color: Colors.white)),
+                        subtitle: Text(item['description'],
+                            style: const TextStyle(color: Colors.white)),
+                      ),
+                    );
+                  },
+                ));
           }
         },
       ),
@@ -57,7 +64,6 @@ class TableuWidget extends StatelessWidget {
   }
 
   Future<List<Map<String, dynamic>?>?> fetchTableuApi(int channelId) async {
-    print("channel id: $channelId");
     final dio = Dio();
     try {
       final response = await dio.get(

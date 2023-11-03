@@ -26,7 +26,7 @@ class Home extends StatelessWidget {
         future: fetchChannelsApi(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
@@ -35,7 +35,7 @@ class Home extends StatelessWidget {
             List<Map<String, dynamic>?> channels = snapshot.data ?? [];
 
             return Container(
-              color: Colors.grey, // Set the background color of the screen
+              color: const Color.fromARGB(255, 28, 28, 28), // Background color
               child: ListView.builder(
                 itemCount: channels.length,
                 itemBuilder: (context, index) {
@@ -52,34 +52,37 @@ class Home extends StatelessWidget {
                       );
                     },
                     child: Card(
+                      color: const Color.fromARGB(255, 28, 28, 28),
                       margin:
-                          EdgeInsets.all(8.0), // Add margin around the cards
-                      elevation: 5, // Add a shadow effect
+                          const EdgeInsets.all(8.0), // Margin around the cards
+                      elevation: 5, // Shadow effect
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
                             12.0), // Apply rounded corners
-                        side: BorderSide(
-                            color: Colors.grey,
+                        side: const BorderSide(
+                            color: Color.fromARGB(255, 220, 220, 220),
                             width: 1.0), // Add a silver outline
                       ),
                       child: ListTile(
-                        leading: Container(
-                          width:
-                              60, // Set the width of the circular image container
-                          height:
-                              60, // Set the height of the circular image container
-
+                        leading: SizedBox(
+                          width: 60,
+                          height: 60,
                           child: Center(
                             child: Image.network(
                               item['image'],
                               errorBuilder: (context, error, stackTrace) {
-                                return Text('Image load failed');
+                                return const Text('Image load failed',
+                                    style: TextStyle(color: Colors.white));
                               },
                             ),
                           ),
                         ),
-                        title: Text(item['name']),
-                        subtitle: Text(item['tagline']),
+                        title: Text(
+                          item['name'],
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        subtitle: Text(item['tagline'],
+                            style: const TextStyle(color: Colors.white)),
                       ),
                     ),
                   );
