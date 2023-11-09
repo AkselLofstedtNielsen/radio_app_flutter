@@ -20,7 +20,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: const Text('Home'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>?>?>(
         future: fetchChannelsApi(),
