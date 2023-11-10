@@ -43,10 +43,9 @@ class _TableuWidgetState extends State<TableuWidget> {
   void _scrollListener() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
-      // User has scrolled to the bottom
       if (!isLoading) {
-        final nextDate = _latestLoadedDate.add(Duration(days: 1));
-        print("Fetching data for next date: $nextDate");
+        final nextDate = _latestLoadedDate.add(const Duration(days: 1));
+        print("next date: $nextDate");
         fetchData(nextDate);
       }
     }
@@ -60,7 +59,6 @@ class _TableuWidgetState extends State<TableuWidget> {
     try {
       final dio = Dio();
       final formattedDate = DateFormat('yyyy-MM-dd').format(date);
-      print("date: $formattedDate");
       final response = await dio.get(
           'http://api.sr.se/api/v2/scheduledepisodes?channelid=${widget.channelId}&date=$formattedDate&format=json');
       if (response.statusCode == 200) {
@@ -86,22 +84,21 @@ class _TableuWidgetState extends State<TableuWidget> {
         isLoading = false;
       });
     }
-    // Update the latest loaded date for subsequent calls
-    _latestLoadedDate = date.add(Duration(days: 1));
+
+    _latestLoadedDate = date.add(const Duration(days: 1));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tableu Widget'),
+        title: const Text('Tableu'),
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification is ScrollEndNotification &&
               _scrollController.position.extentAfter == 0) {
-            fetchData(
-                _latestLoadedDate); // Load more data when reaching the end of the list
+            fetchData(_latestLoadedDate);
           }
           return false;
         },
@@ -125,11 +122,10 @@ class _TableuWidgetState extends State<TableuWidget> {
                   side: const BorderSide(color: Colors.grey, width: 1.0),
                 ),
                 child: ListTile(
-                  // Image to the left
                   leading: Image.network(
                     item['imageurl'],
-                    height: 80, // Set the height of the image
-                    width: 80, // Set the width of the image
+                    height: 80,
+                    width: 80,
                     errorBuilder: (context, error, stackTrace) {
                       return const Text('Image load failed',
                           style: TextStyle(color: Colors.white));
@@ -138,19 +134,16 @@ class _TableuWidgetState extends State<TableuWidget> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title at the top
                       Text(item['title'],
                           style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold)),
-                      // Description in the middle next to the image
                       Text(item['description'],
                           style: TextStyle(
                               color: Colors.white.withOpacity(0.8),
                               fontSize: 14)),
                     ],
                   ),
-                  // Start and End Time at the bottom
                   subtitle: Text(
                     "$startTime-$endTime",
                     style: const TextStyle(color: Colors.blue),
@@ -171,7 +164,6 @@ String convertTimestampToReadableTime(String timestamp) {
         int.parse(timestamp.replaceAll(RegExp(r'[^0-9]'), ''));
     final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
 
-    // Format the DateTime to show only hour and minute
     final String formattedTime = DateFormat('HH:mm').format(dateTime);
 
     return formattedTime;
