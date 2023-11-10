@@ -15,12 +15,19 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  DateTime selectedDate = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('Radio'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>?>?>(
         future: fetchChannelsApi(),
@@ -35,7 +42,7 @@ class Home extends StatelessWidget {
             List<Map<String, dynamic>?> channels = snapshot.data ?? [];
 
             return Container(
-              color: const Color.fromARGB(255, 28, 28, 28), // Background color
+              color: const Color.fromARGB(255, 28, 28, 28),
               child: ListView.builder(
                 itemCount: channels.length,
                 itemBuilder: (context, index) {
@@ -46,22 +53,23 @@ class Home extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              TableuWidget(channelId: channelId),
+                          builder: (context) => TableuWidget(
+                            channelId: channelId,
+                            selectedDate: selectedDate,
+                          ),
                         ),
                       );
                     },
                     child: Card(
                       color: const Color.fromARGB(255, 28, 28, 28),
-                      margin:
-                          const EdgeInsets.all(8.0), // Margin around the cards
-                      elevation: 5, // Shadow effect
+                      margin: const EdgeInsets.all(8.0),
+                      elevation: 5,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            12.0), // Apply rounded corners
+                        borderRadius: BorderRadius.circular(12.0),
                         side: const BorderSide(
-                            color: Color.fromARGB(255, 220, 220, 220),
-                            width: 1.0), // Add a silver outline
+                          color: Color.fromARGB(255, 220, 220, 220),
+                          width: 1.0,
+                        ),
                       ),
                       child: ListTile(
                         leading: SizedBox(
@@ -81,8 +89,10 @@ class Home extends StatelessWidget {
                           item['name'],
                           style: const TextStyle(color: Colors.white),
                         ),
-                        subtitle: Text(item['tagline'],
-                            style: const TextStyle(color: Colors.white)),
+                        subtitle: Text(
+                          item['tagline'],
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   );
