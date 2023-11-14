@@ -59,8 +59,10 @@ class _TableuWidgetState extends State<TableuWidget> {
     try {
       final dio = Dio();
       final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+      print(
+          'http://api.sr.se/api/v2/scheduledepisodes?channelid=${widget.channelId}&date=$formattedDate&size=40&format=json');
       final response = await dio.get(
-          'http://api.sr.se/api/v2/scheduledepisodes?channelid=${widget.channelId}&date=$formattedDate&format=json');
+          'http://api.sr.se/api/v2/scheduledepisodes?channelid=${widget.channelId}&date=$formattedDate&size=40&format=json');
       if (response.statusCode == 200) {
         final data = response.data['schedule'];
         List<Map<String, dynamic>?> newTableu =
@@ -85,7 +87,7 @@ class _TableuWidgetState extends State<TableuWidget> {
       });
     }
 
-    _latestLoadedDate = date.add(const Duration(days: 1));
+    _latestLoadedDate = date.add(const Duration(hours: 24));
   }
 
   @override

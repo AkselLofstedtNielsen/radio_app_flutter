@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:radio_application_flutter/tableu.dart';
@@ -7,7 +8,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, Key? keys});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
 }
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  const Home({super.key, Key? keys});
 
   @override
   _HomeState createState() => _HomeState();
@@ -26,6 +27,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   DateTime selectedDate = DateTime.now();
+  bool isPlaying = false;
+  late int currentPlayingChannelId;
+  AudioPlayer audioPlayer = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
@@ -52,51 +56,80 @@ class _HomeState extends State<Home> {
                 itemBuilder: (context, index) {
                   final item = channels[index]!;
                   int channelId = item['id'];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TableuWidget(
-                            channelId: channelId,
-                            selectedDate: selectedDate,
+                  return Card(
+                    color: const Color.fromARGB(255, 28, 28, 28),
+                    margin: const EdgeInsets.all(8.0),
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      side: const BorderSide(
+                        color: Color.fromARGB(255, 220, 220, 220),
+                        width: 1.0,
+                      ),
+                    ),
+                    child: ListTile(
+                      leading: SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: Center(
+                          child: Image.network(
+                            item['image'],
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Text('Image load failed',
+                                  style: TextStyle(color: Colors.white));
+                            },
                           ),
-                        ),
-                      );
-                    },
-                    child: Card(
-                      color: const Color.fromARGB(255, 28, 28, 28),
-                      margin: const EdgeInsets.all(8.0),
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        side: const BorderSide(
-                          color: Color.fromARGB(255, 220, 220, 220),
-                          width: 1.0,
                         ),
                       ),
-                      child: ListTile(
-                        leading: SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: Center(
-                            child: Image.network(
-                              item['image'],
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Text('Image load failed',
-                                    style: TextStyle(color: Colors.white));
-                              },
+                      title: Text(
+                        item['name'],
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      subtitle: Text(
+                        item['tagline'],
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              isPlaying && currentPlayingChannelId == channelId
+                                  ? Icons.stop
+                                  : Icons.play_arrow,
+                              color: Colors.white,
                             ),
+                            onPressed: () {
+                              setState(() {
+                                isPlaying = !isPlaying ||
+                                    currentPlayingChannelId != channelId;
+                                currentPlayingChannelId = channelId;
+                                if (isPlaying) {
+                                  playAudio(item['liveaudio']['url']);
+                                } else {
+                                  stopAudio();
+                                }
+                              });
+                            },
                           ),
-                        ),
-                        title: Text(
-                          item['name'],
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        subtitle: Text(
-                          item['tagline'],
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.info,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TableuWidget(
+                                    channelId: channelId,
+                                    selectedDate: selectedDate,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -107,6 +140,28 @@ class _HomeState extends State<Home> {
         },
       ),
     );
+  }
+
+  void playAudio(String url) {
+    audioPlayer.play(UrlSource(url));
+    audioPlayer.onPlayerComplete.listen((event) {
+      setState(() {
+        isPlaying = false;
+      });
+    });
+  }
+
+  void stopAudio() {
+    audioPlayer.stop();
+    setState(() {
+      isPlaying = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    audioPlayer.dispose();
+    super.dispose();
   }
 
   Future<List<Map<String, dynamic>?>?> fetchChannelsApi() async {
